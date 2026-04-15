@@ -17,8 +17,10 @@ pipeline {
 
         stage('Push Image') {
             steps {
-                sh 'docker login -u adnankhan48 -p YOUR_DOCKERHUB_PASSWORD'
-                sh 'docker push adnankhan48/flask-devops-app:latest'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh 'docker login -u $USER -p $PASS'
+                    sh 'docker push adnankhan48/flask-devops-app:latest'
+                }
             }
         }
 
