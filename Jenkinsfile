@@ -59,6 +59,10 @@ pipeline {
                 sh '''
                 kubectl apply -f deployment.yaml
                 kubectl apply -f service.yaml
+
+                # IMPORTANT FIX: force Kubernetes to pull latest image
+                kubectl rollout restart deployment/flask-deployment
+
                 kubectl rollout status deployment/flask-deployment --timeout=60s
                 '''
             }
