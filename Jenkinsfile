@@ -17,7 +17,7 @@ pipeline {
                 git branch: "${GIT_BRANCH}", url: "${GIT_REPO}"
             }
         }
-
+//kkkkk
         stage('Test Kubernetes') {
             steps {
                 sh 'kubectl get nodes'
