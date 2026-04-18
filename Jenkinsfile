@@ -84,13 +84,20 @@ pipeline {
     }
 
     post {
+
         success {
             echo "✅ Flask App Build & Deployment Successful!"
         }
 
         failure {
             echo "❌ Pipeline Failed - Rolling back deployment..."
-            sh 'kubectl rollout undo deployment/flask-deployment'
+
+            sh '''
+            kubectl rollout undo deployment/flask-deployment
+            kubectl rollout status deployment/flask-deployment --timeout=120s
+            '''
+
+            echo "🔁 Rollback completed successfully"
         }
     }
 }
