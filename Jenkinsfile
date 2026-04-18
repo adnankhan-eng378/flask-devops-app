@@ -17,7 +17,7 @@ pipeline {
                 git branch: "${GIT_BRANCH}", url: "${GIT_REPO}"
             }
         }
-//kkkkkfff
+
         stage('Test Kubernetes') {
             steps {
                 sh 'kubectl get nodes'
@@ -27,7 +27,7 @@ pipeline {
         stage('Login to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-credentials',   // ✅ same as working one
+                    credentialsId: 'dockerhub-credentials',
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
@@ -59,6 +59,7 @@ pipeline {
                 sh '''
                 kubectl apply -f deployment.yaml
                 kubectl apply -f service.yaml
+                kubectl rollout status deployment/flask-deployment --timeout=60s
                 '''
             }
         }
@@ -81,13 +82,15 @@ pipeline {
             }
         }
     }
-//dddddhhhjjjjjjjjjjkkk
+
     post {
         success {
             echo "✅ Flask App Build & Deployment Successful!"
         }
+
         failure {
-            echo "❌ Pipeline Failed - check logs"
+            echo "❌ Pipeline Failed - Rolling back deployment..."
+            sh 'kubectl rollout undo deployment/flask-deployment'
         }
     }
 }
